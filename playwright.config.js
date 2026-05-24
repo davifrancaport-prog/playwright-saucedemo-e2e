@@ -6,10 +6,21 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 2 : undefined,
-  reporter: [
-    ['html', { outputFolder: 'playwright-report', open: 'never' }],
-    ['list'],
-  ],
+  reporter: process.env.CI
+    ? [
+        ['list'],
+        ['html', { outputFolder: 'playwright-report', open: 'never' }],
+        ['@estruyf/github-actions-reporter', {
+          title: 'Playwright E2E summary',
+          useDetails: true,
+          showError: true,
+          showArtifactsLink: true,
+        }],
+      ]
+    : [
+        ['html', { outputFolder: 'playwright-report', open: 'never' }],
+        ['list'],
+      ],
   use: {
     baseURL: 'https://www.saucedemo.com',
     trace: 'on-first-retry',
